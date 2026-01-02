@@ -1,0 +1,22 @@
+# PDF Text and Table Extraction Requirements
+
+# Basic PDF libraries
+pypdf2>=3.0.0
+pdfplumber>=0.10.0
+pymupdf>=1.23.0
+
+# Table extraction specialized libraries
+tabula-py>=2.8.0
+camelot-py[cv]>=0.11.0
+
+# Data processing
+pandas>=2.0.0
+openpyxl>=3.1.0
+
+# Image processing (for camelot)
+opencv-python>=4.8.0
+Pillow<12.0,>=8.0
+
+# Optional dependencies
+# ghostscript (system package) - required for camelot
+# java (system package) - required for tabula-py

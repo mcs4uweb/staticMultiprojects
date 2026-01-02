@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  ingestor:
+    build: .
+    volumes:
+      - ./data:/app/data        # Your documents
+      - ./chroma_db:/app/chroma_db  # Persistent vector DB
+    environment:
+      - PYTHONUNBUFFERED=1
+    # To run ingestion:
+    # docker-compose run --rm ingestor python ingest.py data
+
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./chroma_db:/app/chroma_db
+    environment:
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - ingestor

@@ -1,0 +1,12 @@
+# docker-compose.yml
+version: '3'
+services:
+  focalboard:
+    image: mattermost/focalboard:latest
+    container_name: focalboard
+    ports:
+      - "8080:8000"
+    volumes:
+      - ./focalboard-data:/opt/focalboard/data
+      - ./focalboard-config:/opt/focalboard/config
+    restart: unless-stopped

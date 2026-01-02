@@ -1,0 +1,265 @@
+"""
+PDF Extraction Quick Reference Cheat Sheet
+===========================================
+
+INSTALLATION
+------------
+Basic (Recommended):
+  pip install pdfplumber pandas openpyxl --break-system-packages
+
+Full (All Features):
+  pip install -r requirements_pdf.txt --break-system-packages
+
+
+METHOD SELECTION
+----------------
+Choose based on your PDF type:
+
+📄 Simple Text PDFs
+  → Use: PyPDF2 or pdfplumber
+  
+📊 PDFs with Tables
+  → Use: pdfplumber (BEST CHOICE)
+  
+📋 Complex Multi-Page Tables
+  → Use: tabula-py or pdfplumber
+  
+🏥 Medical Documents (Forms, Labs)
+  → Use: medical_pdf_extraction.py
+  
+⚡ Large PDFs (Speed Priority)
+  → Use: PyMuPDF (fitz)
+  
+✨ Perfect Table Extraction
+  → Use: camelot-py
+
+
+QUICK RECIPES
+-------------
+
+1. EXTRACT SINGLE TABLE
+   ----------------------
+   import pdfplumber
+   import pandas as pd
+   
+   with pdfplumber.open("file.pdf") as pdf:
+       tables = pdf.pages[0].extract_tables()
+       df = pd.DataFrame(tables[0][1:], columns=tables[0][0])
+       df.to_csv("output.csv", index=False)
+
+
+2. EXTRACT ALL TABLES
+   -------------------
+   import pdfplumber
+   import pandas as pd
+   
+   all_tables = []
+   with pdfplumber.open("file.pdf") as pdf:
+       for page in pdf.pages:
+           for table in page.extract_tables():
+               if table:
+                   df = pd.DataFrame(table[1:], columns=table[0])
+                   all_tables.append(df)
+   
+   combined = pd.concat(all_tables, ignore_index=True)
+
+
+3. EXTRACT TEXT + TABLES
+   ----------------------
+   import pdfplumber
+   
+   with pdfplumber.open("file.pdf") as pdf:
+       for page in pdf.pages:
+           text = page.extract_text()
+           tables = page.extract_tables()
+           print(f"Text: {len(text)} chars, Tables: {len(tables)}")
+
+
+4. SAVE TO EXCEL
+   --------------
+   import pdfplumber
+   import pandas as pd
+   
+   tables = []
+   with pdfplumber.open("file.pdf") as pdf:
+       for page in pdf.pages:
+           tables.extend(page.extract_tables())
+   
+   with pd.ExcelWriter("output.xlsx") as writer:
+       for i, table in enumerate(tables, 1):
+           if table:
+               df = pd.DataFrame(table[1:], columns=table[0])
+               df.to_excel(writer, sheet_name=f"Table_{i}", index=False)
+
+
+5. MEDICAL DOCUMENTS
+   ------------------
+   from medical_pdf_extraction import MedicalPDFExtractor
+   
+   with MedicalPDFExtractor("labs.pdf") as extractor:
+       extractor.generate_report()  # Creates CSV, JSON, Excel
+
+
+6. FILTER TABLES BY KEYWORD
+   -------------------------
+   import pdfplumber
+   
+   with pdfplumber.open("file.pdf") as pdf:
+       for page in pdf.pages:
+           for table in page.extract_tables():
+               if "Patient" in str(table):
+                   # Process this table
+                   print(table)
+
+
+COMMAND LINE USAGE
+------------------
+# Simple examples
+python pdf_simple_examples.py document.pdf
+
+# All methods comparison
+python pdf_text_table_extraction.py document.pdf
+
+# Medical extraction
+python medical_pdf_extraction.py lab_results.pdf
+
+
+COMMON PATTERNS
+---------------
+
+Pattern 1: Clean Extracted Data
+--------------------------------
+df = df.dropna(how='all')              # Remove empty rows
+df = df.fillna('')                     # Fill NaN with empty string
+df.columns = df.columns.str.strip()    # Clean column names
+
+
+Pattern 2: Handle Multiple Header Rows
+---------------------------------------
+# If table has 2 header rows, combine them
+headers = [f"{h1}_{h2}" for h1, h2 in zip(table[0], table[1])]
+df = pd.DataFrame(table[2:], columns=headers)
+
+
+Pattern 3: Extract from Specific Page
+--------------------------------------
+with pdfplumber.open("file.pdf") as pdf:
+    page_3_tables = pdf.pages[2].extract_tables()  # 0-indexed
+
+
+Pattern 4: Process in Batches
+------------------------------
+import pdfplumber
+
+def process_page(page_num, page):
+    tables = page.extract_tables()
+    return page_num, tables
+
+with pdfplumber.open("large.pdf") as pdf:
+    for i in range(0, len(pdf.pages), 10):  # Process 10 pages at a time
+        batch = pdf.pages[i:i+10]
+        for page in batch:
+            # Process page
+            pass
+
+
+TROUBLESHOOTING
+---------------
+
+Problem: No tables detected
+Solution: 
+  - Try different library (tabula, camelot)
+  - Adjust table_settings in pdfplumber
+  - Check if PDF is image (needs OCR)
+
+Problem: Table structure wrong
+Solution:
+  - Use custom table_settings
+  - Try camelot with flavor='stream'
+  - Post-process with pandas
+
+Problem: Text is garbled
+Solution:
+  - PDF might be scanned (needs OCR)
+  - Try different library
+  - Check PDF encoding
+
+Problem: "Java not found" (tabula)
+Solution:
+  sudo apt-get install default-jre
+
+Problem: "ghostscript not found" (camelot)
+Solution:
+  sudo apt-get install ghostscript
+
+
+PERFORMANCE TIPS
+----------------
+✓ Use pdfplumber for balance of speed/quality
+✓ Use PyMuPDF for large files
+✓ Process specific pages, not entire PDF
+✓ Cache results to avoid re-processing
+✓ Use multiprocessing for batch jobs
+
+
+MEDICAL USE CASES
+-----------------
+Lab Results:
+  - Extract test names, values, ranges
+  - Flag abnormal results
+  - Export to CSV/Excel
+
+Patient Records:
+  - Extract demographics
+  - Medication lists
+  - Vital signs
+
+Insurance Forms:
+  - Extract structured form data
+  - Parse claim information
+  - Process in batch
+
+
+FILE REFERENCE
+--------------
+pdf_simple_examples.py         → Start here! Simple examples
+pdf_text_table_extraction.py   → Compare all methods
+medical_pdf_extraction.py       → Medical documents
+requirements_pdf.txt            → Install dependencies
+README_PDF_EXTRACTION.md        → Full documentation
+
+
+EXAMPLE WORKFLOW
+----------------
+1. Install dependencies:
+   pip install pdfplumber pandas openpyxl --break-system-packages
+
+2. Test simple extraction:
+   python pdf_simple_examples.py your_file.pdf
+
+3. Review output files:
+   extracted_table.csv
+   output_tables.xlsx
+
+4. Customize for your needs:
+   - Modify medical_pdf_extraction.py for your document structure
+   - Add validation logic
+   - Integrate with your data pipeline
+
+
+NEXT STEPS
+----------
+1. ✓ Install pdfplumber
+2. ✓ Run pdf_simple_examples.py on a test PDF
+3. ✓ Review extracted data quality
+4. → Customize extraction logic for your documents
+5. → Add to your data processing pipeline
+6. → Add error handling and validation
+7. → Scale to batch processing
+
+
+SUPPORT
+-------
+Documentation: README_PDF_EXTRACTION.md
+Issues: Check troubleshooting section
+Testing: Use pdf_simple_examples.py first

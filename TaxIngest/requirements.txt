@@ -1,0 +1,9 @@
+fastapi==0.104.1
+uvicorn==0.24.0
+langchain==0.1.16
+langchain-community==0.0.34
+chromadb==0.4.24
+sentence-transformers==2.2.2
+pdf2image==1.16.4
+pytesseract==0.3.10
+python-dotenv==1.0.0
