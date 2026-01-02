@@ -1,7 +1,9 @@
+import os
+
 import boto3
 
 
-SLACK_WEBHOOK_URL = 'REDACTED_SLACK_WEBHOOK_URL'
+SLACK_WEBHOOK_URL = os.getenv("SLACK_WEBHOOK_URL")
 DISQUALIFYING_CONDITIONS = {
     "mental_health_behavioral": [
         "schizophrenia",
