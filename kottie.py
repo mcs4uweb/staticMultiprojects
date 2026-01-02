@@ -23,7 +23,8 @@ except ModuleNotFoundError:
 
 # --- 1. SETUP AND CONFIGURATION ---
 # IMPORTANT: Replace this with your actual Gemini API Key
-GEMINI_API_KEY = "AIzaSyAQbhcmzdniiKIirH-V8YRH4vwSmPnS18A"
+GEMINI_API_KEY = os.getenv("GOOGLE_API_KEY")
+ 
 os.environ['GEMINI_API_KEY'] = GEMINI_API_KEY
 
 GEMINI_CLIENT = None
