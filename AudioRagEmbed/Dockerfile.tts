@@ -1,0 +1,9 @@
+FROM python:3.10-slim
+
+WORKDIR /app
+RUN apt-get update && apt-get install -y ffmpeg espeak
+RUN pip install --no-cache-dir flask TTS torch torchaudio
+
+COPY tts/ .
+EXPOSE 5002
+CMD ["python", "coqui_server.py"]

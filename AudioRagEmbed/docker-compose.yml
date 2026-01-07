@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  voice-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile.agent
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./agent/knowledge:/app/knowledge
+    depends_on:
+      - asr-service
+      - tts-service
+
+  asr-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.asr
+    ports:
+      - "5001:5001"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  tts-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.tts
+    ports:
+      - "5002:5002"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+volumes:
+  knowledge:

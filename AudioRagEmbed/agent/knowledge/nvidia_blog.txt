@@ -1,0 +1,6 @@
+NVIDIA provides AI Enterprise software that includes Riva for speech AI, NeMo for conversational AI, and TensorRT for optimization. 
+Key components for voice agents include:
+- Riva ASR/TTS for speech processing
+- NeMo Guardrails for safety
+- Retriever modules for RAG
+Always implement safety checks before processing user input.
