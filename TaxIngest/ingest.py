@@ -4,6 +4,8 @@ from pathlib import Path
 from typing import List, Union
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.document_loaders.base import BaseLoader
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import Chroma
 from langchain_core.documents import Document
 from pdf2image import convert_from_path
 import pytesseract
@@ -86,8 +88,16 @@ class TaxDocumentLoader(BaseLoader):
 
 class TaxIngestor:
     def __init__(self, data_dir: str = "data", persist_dir: str = "chroma_db"):
-        self.data_dir = Path(data_dir)
-        self.persist_dir = persist_dir
+        base_dir = Path(__file__).resolve().parent
+        data_path = Path(data_dir)
+        if not data_path.is_absolute():
+            data_path = base_dir / data_path
+        self.data_dir = data_path
+
+        persist_path = Path(persist_dir)
+        if not persist_path.is_absolute():
+            persist_path = base_dir / persist_path
+        self.persist_dir = persist_path
         self.embedding = HuggingFaceEmbeddings(
             model_name="sentence-transformers/all-MiniLM-L6-v2"
         )
@@ -111,7 +121,7 @@ class TaxIngestor:
         vectorstore = Chroma.from_documents(
             documents=all_docs,
             embedding=self.embedding,
-            persist_directory=self.persist_dir
+            persist_directory=str(self.persist_dir)
         )
         vectorstore.persist()
         logger.info(f"✅ Ingested {len(all_docs)} documents to {self.persist_dir}")

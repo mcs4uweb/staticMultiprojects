@@ -1,0 +1,156 @@
+# Tax RAG Harvester Configuration
+
+# IRS Data Source Settings
+irs:
+  base_url: "https://www.irs.gov/pub/irs-pdf"
+  prior_year_url: "https://www.irs.gov/pub/irs-prior"
+  rate_limit: 2  # requests per second
+  timeout: 30    # seconds
+  retry_attempts: 3
+  user_agent: "TaxRAGHarvester/1.0 (Educational Research)"
+
+# Tax Year Configuration
+tax_year: 2024
+
+# Priority Forms to Harvest
+forms:
+  individual:
+    - f1040
+    - f1040sr    # Seniors
+    - f1040s1    # Additional Income
+    - f1040s2    # Additional Taxes
+    - f1040s3    # Additional Credits
+    - f1040sa    # Schedule A - Itemized Deductions
+    - f1040sb    # Schedule B - Interest/Dividends
+    - f1040sc    # Schedule C - Business Income
+    - f1040sd    # Schedule D - Capital Gains
+    - f1040se    # Schedule E - Rental/Royalty
+    - f1040sse   # Schedule SE - Self-Employment Tax
+  
+  retirement:
+    - f8606      # Nondeductible IRAs
+    - f5329      # Additional Taxes on Qualified Plans
+    - f1099r     # Distributions (reference only)
+  
+  healthcare:
+    - f8889      # HSA
+    - f8962      # Premium Tax Credit
+    - f8965      # Health Coverage Exemptions
+  
+  credits:
+    - f8863      # Education Credits
+    - f2441      # Child/Dependent Care
+    - f5695      # Residential Energy Credits
+    - f8812      # Child Tax Credit
+  
+  other:
+    - f8949      # Sales of Capital Assets
+    - fw4        # Employee Withholding
+    - f1040es    # Estimated Tax
+    - f4868      # Extension
+
+# Instructions to Harvest (i{form_number})
+instructions:
+  - i1040
+  - i1040sa
+  - i1040sb
+  - i1040sc
+  - i1040sd
+  - i1040se
+  - i8889
+  - i8863
+  - i8606
+
+# Publications to Harvest
+publications:
+  essential:
+    - p17        # Your Federal Income Tax (comprehensive)
+    - p501       # Dependents, Standard Deduction
+    - p502       # Medical and Dental Expenses
+    - p503       # Child and Dependent Care
+    - p505       # Tax Withholding and Estimated Tax
+  
+  retirement:
+    - p590a      # IRAs - Contributions
+    - p590b      # IRAs - Distributions
+    - p575       # Pension and Annuity Income
+  
+  business:
+    - p334       # Small Business Tax Guide
+    - p535       # Business Expenses
+    - p587       # Business Use of Home
+  
+  investments:
+    - p550       # Investment Income and Expenses
+    - p544       # Sales and Other Dispositions
+  
+  healthcare:
+    - p969       # HSAs and Other Health Plans
+    - p974       # Premium Tax Credit
+
+# ChromaDB Configuration
+chromadb:
+  persist_directory: "./data/chroma"
+  collection_prefix: "tax_2024_"
+  
+  collections:
+    forms:
+      name: "tax_forms"
+      description: "IRS tax form content"
+    instructions:
+      name: "tax_instructions"
+      description: "Form instructions and guidance"
+    publications:
+      name: "tax_publications"
+      description: "IRS publications and guides"
+    schedules:
+      name: "tax_schedules"
+      description: "Form schedules (A, B, C, etc.)"
+
+# Embedding Configuration
+embedding:
+  model: "text-embedding-3-small"  # OpenAI
+  # Alternative: use local model
+  # model: "all-MiniLM-L6-v2"
+  batch_size: 100
+
+# Chunking Configuration
+chunking:
+  default:
+    target_tokens: 500
+    max_tokens: 1000
+    overlap_tokens: 150
+  
+  forms:
+    target_tokens: 400
+    max_tokens: 800
+    overlap_tokens: 100
+  
+  instructions:
+    target_tokens: 500
+    max_tokens: 1000
+    overlap_tokens: 150
+  
+  publications:
+    target_tokens: 600
+    max_tokens: 1200
+    overlap_tokens: 200
+  
+  # Special handling
+  preserve_intact:
+    - tax_tables
+    - worksheets
+    - examples
+
+# Output Directories
+paths:
+  raw_pdfs: "./data/raw"
+  processed_text: "./data/processed/text"
+  chunks: "./data/processed/chunks"
+  catalog: "./data/catalog.json"
+
+# Logging
+logging:
+  level: INFO
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "./logs/harvester.log"

@@ -1,0 +1,31 @@
+# Core dependencies
+chromadb>=0.4.22
+anthropic>=0.18.0
+
+# PDF processing
+pdfplumber>=0.10.0
+PyMuPDF>=1.23.0
+pytesseract>=0.3.10
+
+# Text processing
+tiktoken>=0.5.0
+langchain-text-splitters>=0.0.1
+
+# HTTP and scraping
+httpx>=0.26.0
+beautifulsoup4>=4.12.0
+aiohttp>=3.9.0
+aiofiles>=23.2.0
+
+# Data handling
+pydantic>=2.5.0
+pyyaml>=6.0.0
+
+# Utilities
+tqdm>=4.66.0
+tenacity>=8.2.0
+python-dotenv>=1.0.0
+
+# Development
+pytest>=7.4.0
+pytest-asyncio>=0.23.0

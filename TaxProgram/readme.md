@@ -9,3 +9,6 @@ Sample tax scenario:
 A common tax filing example.
 
 A married couple filing joint return with 2 children, they have a mortgage, two cars with loans, they have a mortgage, they have investment income, they have health insurance, they a HSA account that they max out, they each contribute the max amount to their IRA roth accounts. They both have company 401k contrition witch they contribute the max amount. 
+
+prompt 1
+I'm planning on creating a US tax filing application using ChromaDB and harvesting forms and documentation that support tax filing so I need guidance and claude agents to set up a good solution for harvesting information
